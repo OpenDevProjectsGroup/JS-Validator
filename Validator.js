@@ -31,22 +31,27 @@ var Validator = {
 	config: {},
 
 	validate: function(data) {
-		var validationRule, checker, goodToGo, toString = Object.prototype.toString;
+		var validationRule, 
+			 checker, 
+			 goodToGo, 
+			 toString = Object.prototype.toString,
+			 isArray,
+			 i, j, len;
 
 		// Empty error errorMessages
 		this.errorMessages = [];
 
 		// Filter through the form data object
-		for (var i in data) {
+		for (i in data) {
 			if (data.hasOwnProperty(i)) {
 				// Like, "number" or "required" (Could be array of checks)
 				validationRule = this.config[i];
 
 				// Did the user pass an array of checks?
-				var isArray = (toString.call(validationRule) === '[object Array]');
+			   isArray = (toString.call(validationRule) === '[object Array]');
 				if (isArray) {
 					// Then filter through array, and check to see if we have a rule for the check.
-					var len = validationRule.length;
+					len = validationRule.length;
 					checker = [];
 					
 					while (len--) {
@@ -57,7 +62,6 @@ var Validator = {
 					}
 				} else {
 					// no array. just a single value to validate.
-
 					if (!validationRule) { 
 						continue;
 					}
@@ -71,7 +75,7 @@ var Validator = {
 
 				// Now call the validate methods of all the items in the array
 				if (toString.call(checker) === '[object Array]') {
-					for (var j = 0; j < checker.length; j++) {
+					for (j = 0; j < checker.length; j++) {
 						goodToGo = checker[j].validate(data[i]);
 
 						// If not good to go, add the error message to the "errorMessages" array.
@@ -83,7 +87,6 @@ var Validator = {
 						this.errorMessages.push(i + ': ' + checker.errorMessage);
 					}
 				}
-
 			}
 		} // end for
 	},
