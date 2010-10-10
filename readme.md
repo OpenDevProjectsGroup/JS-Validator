@@ -4,12 +4,11 @@
 <p>For a crash-course, first, reference the <code>Validator.js</code> file in your project. At the bottom is fine. </p>
 
 <h3>Step 2</h3>
-	<p>Next, you certainly need some data to work with -- probably coming from a form. Something like this... 
-	</p>
+<p>Next, you certainly need some data to work with -- probably coming from a form. Something like this... <D-d></p>
 
-	<pre><code>
-	 var formData = {
-		firstName : 'Jeffrey',
+<pre><code>
+var formData = {
+	firstName : 'Jeffrey',
 	lastName : '',
 	occupation : 'web developer',
 	age : '',
