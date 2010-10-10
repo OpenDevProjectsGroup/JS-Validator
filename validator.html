@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+
+		<!-- some contact form would go here -->
+		<ul id="results">
+
+		</ul>
+
+		<script src="Validator.js"></script>
+		<script>
+			// Represents data retrieved from something like a contact form
+			var formData = {
+				firstName : 'Jeffrey',
+				lastName : '',
+				occupation : 'web developer',
+				age : '',
+				emailAddress : 'jeff_way@yahoodotcom'
+			}
+
+			// Here, we set up our rules for each field.
+			// If a field doesn't require validation, 
+			// just leave it out (like occupation).
+			Validator.config = {
+				firstName : 'required',
+				lastName : 'required', // only for example
+				age : ['required', 'number'],
+				emailAddress : 'email'
+			};
+
+			// We can even add our own custom rules, if needed.
+			// Just pass a validate method, and the error ouput (errorMessage)
+			Validator.validationRules.greaterThanFiveChars = {
+				validate : function(value) {
+					return value.length > 5;
+				},
+				errorMessage : 'Input must be at least six characters'
+			}
+
+			Validator.validate(formData);
+			if ( Validator.hasErrors() ) {
+				Validator.populateList(document.getElementById('results'));
+			} else {
+				alert('No errors. Now update a database or something.');
+			}
+		</script>
+	</body>
+</html>	
+
