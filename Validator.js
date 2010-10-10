@@ -48,8 +48,11 @@ var Validator = {
 					// Then filter through array, and check to see if we have a rule for the check.
 					var len = validationRule.length;
 					checker = [];
+					
 					while (len--) {
-						// if (!validationRule[len]) continue;
+						if ( !this.validationRules[validationRule[len]]) {
+							throw new Error(validationRule[len] + ': Validation parameter is unknown.');
+						}
 						checker.push(this.validationRules[validationRule[len]]);
 					}
 				} else {
