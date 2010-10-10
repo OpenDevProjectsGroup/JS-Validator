@@ -98,16 +98,17 @@ var Validator = {
 
 	// Another little helper method to populate a ul element with the list of errors (if any).
 	populateList: function(results) {
+		var len = Validator.errorMessages.length,
+			 li;
+
 		if (!results) {
 			throw new Error('populateList requires an argument that specifies the container element for the error list.');
 		}
-		if (this.hasErrors) {
-			var len = Validator.errorMessages.length,
-			li;
 
+		if (this.hasErrors) {
 			while (len--) {
 				li = document.createElement('li');
-				li.appendChild(document.createTextNode(Validator.errorMessages[len]));
+				li.appendChild( document.createTextNode(Validator.errorMessages[len]) );
 				results.appendChild(li);
 			}
 		}
