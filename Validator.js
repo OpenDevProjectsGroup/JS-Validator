@@ -35,7 +35,7 @@ var Validator = {
 			 checker, 
 			 goodToGo, 
 			 toString = Object.prototype.toString,
-			 isArray,
+			 isArray, 
 			 i, j, len;
 
 		// Empty error errorMessages
@@ -48,21 +48,21 @@ var Validator = {
 				validationRule = this.config[i];
 
 				// Did the user pass an array of checks?
-			   isArray = (toString.call(validationRule) === '[object Array]');
+				isArray = (toString.call(validationRule) === '[object Array]');
 				if (isArray) {
 					// Then filter through array, and check to see if we have a rule for the check.
 					len = validationRule.length;
 					checker = [];
-					
+
 					while (len--) {
-						if ( !this.validationRules[validationRule[len]]) {
+						if (!this.validationRules[validationRule[len]]) {
 							throw new Error(validationRule[len] + ': Validation parameter is unknown.');
 						}
 						checker.push(this.validationRules[validationRule[len]]);
 					}
 				} else {
 					// no array. just a single value to validate.
-					if (!validationRule) { 
+					if (!validationRule) {
 						continue;
 					}
 
@@ -103,7 +103,7 @@ var Validator = {
 		}
 		if (this.hasErrors) {
 			var len = Validator.errorMessages.length,
-			    li;
+			li;
 
 			while (len--) {
 				li = document.createElement('li');
@@ -114,3 +114,4 @@ var Validator = {
 	}
 
 };
+
