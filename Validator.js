@@ -52,15 +52,20 @@ var Validator = {
 			 goodToGo, 
 			 toString = Object.prototype.toString,
 			 isArray, 
-			 hasLimit, split,
 			 i, j, len;
 
 		// Empty error errorMessages
 		this.errorMessages = [];
 
-		function checkHasLimit(validationRule) {
+		function reviseIfLimit(validationRule) {
+			var split;
 			// Check if rule is min|max_number
-			return (/\d$/.test(validationRule));
+			if ( /\d$/.test(validationRule) ) {
+				split = validationRule.split('_');
+				validationRule = split[0];
+				Validator.limit = split[1];
+			}
+			return validationRule;
 		}
 		
 		// Filter through the form data object
@@ -80,13 +85,9 @@ var Validator = {
 					checker = [];
 
 					while (len--) {
-						 hasLimit = checkHasLimit(validationRule[len]);
-						 if ( hasLimit ) {
-							split = validationRule[len].split('_');
-							validationRule[len] = split[0];
-							this.limit = split[1];
-						 }
-
+						// Check if the rule is "min" or "max" followed by a limit (int). 
+						validationRule[len] = reviseIfLimit(validationRule[len]);
+						
 						if (!this.validationRules[validationRule[len]]) {
 							throw new Error(validationRule[len] + ': Validation parameter is unknown.');
 						}
@@ -94,13 +95,8 @@ var Validator = {
 					}
 				} else {
 					// no array. just a single value to validate.
-					hasLimit = checkHasLimit(validationRule);
-					if ( hasLimit ) {
-						// TODO: Don't repeat these three lines again. Fix.
-						split = validationRule.split('_');
-						validationRule = split[0];
-						this.limit = split[1];
-					}
+					// Check if the rule has a limit (min | max_INT)
+					validationRule = reviseIfLimit(validationRule);
 
 					if (!validationRule) {
 						continue;
