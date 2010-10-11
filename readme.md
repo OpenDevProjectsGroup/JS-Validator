@@ -12,7 +12,9 @@ var formData = {
 	lastName : '',
 	occupation : 'web developer',
 	age : '',
-	emailAddress : 'jeff_way@yahoodotcom'
+	emailAddress : 'jeff_way@yahoodotcom',
+	password : 'mypass',
+	passwordVerify: 'mypass'
 }
 <code></pre>
 
@@ -26,7 +28,8 @@ Validator.config = {
 	firstName : 'required',
 	lastName : 'required', // only for example
 	age : ['required', 'number'],
-	emailAddress : 'email'
+	emailAddress : 'email',
+	passwordVerifiy : 'sameAs_password'
 };
 </code></pre>
 
@@ -63,6 +66,7 @@ Validator.config = {
 	<li><strong>email: </strong>Field must be a valid email address</li>
 	<li><strong>min_INT:</strong>Number of characters must be at least <code>INT</code>. Replace <code>INT</code> with any whole number. </li>
 	<li><strong>max_INT: </strong>Opposite of the one above. </li>
+	<li><strong>sameAs_PROP: </strong>Ensures that two values are the same. Could be used for password comparision. Change "PROP" to a property name.
 </ul>
 
 <h3> Adding Custom Rules </h3>
