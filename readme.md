@@ -67,7 +67,7 @@ Validator.config = {
 
 <h3> Adding Custom Rules </h3>
 <p>
-This script only provides a few rules for convenience: "required," "number," and "email." You'll certainly (myself included) want to extend this for your needs. You can either update the <code>ValidationRules</code> object, from <code>Validator.js</code>, or you can alternatively add additional rules by adding a new object to <code>Validator.validationRules</code>. </p>
+ You'll certainly (myself included) want to extend this for your needs. You can either update the <code>ValidationRules</code> object, from <code>Validator.js</code>, or you can alternatively add additional rules by adding a new object to <code>Validator.validationRules</code>. </p>
 
 <pre><code>
 Validator.validationRules.greaterThanFiveChars = {
