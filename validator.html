@@ -16,30 +16,23 @@
 			// Represents data retrieved from something like a contact form
 			var formData = {
 				firstName : 'Jeffrey',
-				lastName : 'AReallyLongStringWhyAreYouReadingThis',
+				lastName : 'Way',
 				occupation : 'web developer',
-				age : 25,
-				emailAddress : 'jeff_way@yahoodot.com'
+				age : 'twenty five',
+				emailAddress : '',
+				password : 'mypassword',
+				passwordVerify : 'notthesamepassword'
 			}
 
 			// Here, we set up our rules for each field.
 			// If a field doesn't require validation, 
 			// just leave it out (like occupation).
 			Validator.config = {
-				firstName : ['min_8', 'required'],
-				lastName : ['required', 'max_20'], // only for example
-				age : ['required', 'number'],
-				emailAddress : 'email'
+				firstName : ['min_2', 'required'],
+				age : 'number',
+				emailAddress : ['email', 'required'],
+				passwordVerify : 'sameAs_password'
 			};
-
-			// We can even add our own custom rules, if needed.
-			// Just pass a validate method, and the error ouput (errorMessage)
-			Validator.validationRules.greaterThanFiveChars = {
-				validate : function(value) {
-					return value.length > 5;
-				},
-				errorMessage : 'Input must be at least six characters'
-			}
 
 			Validator.validate(formData);
 			if ( Validator.hasErrors() ) {
