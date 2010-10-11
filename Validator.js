@@ -1,6 +1,9 @@
 // inspired by JS Patterns
 var Validator = {
 
+	// For min/max operations
+	limit : '',
+
 	validationRules: {
 		// A few to get started. 
 		required: {
@@ -21,6 +24,18 @@ var Validator = {
 				return exp.test(value);
 			},
 			errorMessage: 'Must use a valid email address.'
+		},
+		min: {
+			validate : function(value, limit) {
+				return value.length >= limit;
+			},
+			errorMessage : 'Not enough characters'
+		},
+		max: {
+			validate : function(value, limit) {
+				return value.length <= limit;
+			},
+			errorMessage : 'Too many characters.'
 		}
 	},
 
@@ -30,23 +45,33 @@ var Validator = {
 	// To be set by the user. 
 	config: {},
 
+
 	validate: function(data) {
 		var validationRule, 
 			 checker, 
 			 goodToGo, 
 			 toString = Object.prototype.toString,
 			 isArray, 
+			 hasLimit, split,
 			 i, j, len;
 
 		// Empty error errorMessages
 		this.errorMessages = [];
 
+		function checkHasLimit(validationRule) {
+			// Check if rule is min|max_number
+			return (/\d$/.test(validationRule));
+		}
+		
 		// Filter through the form data object
 		for (i in data) {
+			// i = field name (firstName)
+			// data[i] = field value (Jeffrey)
+		
 			if (data.hasOwnProperty(i)) {
 				// Like, "number" or "required" (Could be array of checks)
 				validationRule = this.config[i];
-
+	
 				// Did the user pass an array of checks?
 				isArray = (toString.call(validationRule) === '[object Array]');
 				if (isArray) {
@@ -55,6 +80,13 @@ var Validator = {
 					checker = [];
 
 					while (len--) {
+						 hasLimit = checkHasLimit(validationRule[len]);
+						 if ( hasLimit ) {
+							split = validationRule[len].split('_');
+							validationRule[len] = split[0];
+							this.limit = split[1];
+						 }
+
 						if (!this.validationRules[validationRule[len]]) {
 							throw new Error(validationRule[len] + ': Validation parameter is unknown.');
 						}
@@ -62,6 +94,14 @@ var Validator = {
 					}
 				} else {
 					// no array. just a single value to validate.
+					hasLimit = checkHasLimit(validationRule);
+					if ( hasLimit ) {
+						// TODO: Don't repeat these three lines again. Fix.
+						split = validationRule.split('_');
+						validationRule = split[0];
+						this.limit = split[1];
+					}
+
 					if (!validationRule) {
 						continue;
 					}
@@ -76,15 +116,17 @@ var Validator = {
 				// Now call the validate methods of all the items in the array
 				if (toString.call(checker) === '[object Array]') {
 					for (j = 0; j < checker.length; j++) {
-						goodToGo = checker[j].validate(data[i]);
+						goodToGo = checker[j].validate(data[i], this.limit || null );
 
 						// If not good to go, add the error message to the "errorMessages" array.
-						if (!goodToGo) this.errorMessages.push(i + ': ' + checker[j].errorMessage);
+						if (!goodToGo) {
+							this.errorMessages.push(i + ': ' + checker[j].errorMessage + (this.limit ? ' (' + this.limit + ')' : ''));
+						}
 					}
 				} else {
-					goodToGo = checker.validate(data[i]);
+					goodToGo = checker.validate(data[i], this.limit || null);
 					if (!goodToGo) {
-						this.errorMessages.push(i + ': ' + checker.errorMessage);
+						this.errorMessages.push(i + ': ' + checker.errorMessage + (this.limit ? ' (' + this.limit + ')' : ''));
 					}
 				}
 			}

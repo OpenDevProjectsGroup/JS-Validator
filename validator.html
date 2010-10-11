@@ -16,18 +16,18 @@
 			// Represents data retrieved from something like a contact form
 			var formData = {
 				firstName : 'Jeffrey',
-				lastName : '',
+				lastName : 'AReallyLongStringWhyAreYouReadingThis',
 				occupation : 'web developer',
-				age : '',
-				emailAddress : 'jeff_way@yahoodotcom'
+				age : 25,
+				emailAddress : 'jeff_way@yahoodot.com'
 			}
 
 			// Here, we set up our rules for each field.
 			// If a field doesn't require validation, 
 			// just leave it out (like occupation).
 			Validator.config = {
-				firstName : 'required',
-				lastName : 'required', // only for example
+				firstName : ['min_8', 'required'],
+				lastName : ['required', 'max_20'], // only for example
 				age : ['required', 'number'],
 				emailAddress : 'email'
 			};
