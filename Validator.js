@@ -35,8 +35,8 @@ var Validator = {
 			errorMessage : 'Too many characters.'
 		},
 		sameAs : {
-			validate : function(value, limit, propName, sameAs) {
-				return value === Validator.sameAs;
+			validate : function(value, limit, propName, sameAs, origValue) {
+				return value === Validator.data[origValue];
 			},
 		errorMessage : 'Values must be the same'
 		}
@@ -150,7 +150,7 @@ var Validator = {
 		} // end for
 
 		function callValidator(checker) {
-			goodToGo = checker.validate(data[prop], this.min, this.max, prop, Validator.sameAs); // value, property name, what it's being compared to
+			goodToGo = checker.validate(data[prop], this.min, this.max, prop, this.sameAs); // value, property name, what it's being compared to
 			if (!goodToGo) {
 				this.errorMessages.push(prop + ': ' + checker.errorMessage);
 			}
