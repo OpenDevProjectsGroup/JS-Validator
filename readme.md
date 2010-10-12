@@ -91,3 +91,8 @@ Note that you must apply: </p>
 
 <p><strong>This script was a quickie; so please let me know if you notice any issues/improvements. :) </strong></p>
 
+<h3> Current Status of Validator </h3>
+<ul>
+ <li> Still sloppy, with some duplicate code. Need to find some time to clean it all up. </li>
+ <li> Starting to think that it will be more user-friendly to embed the validation rules directly into the form mark-up. Might switch over... </li>
+</ul>

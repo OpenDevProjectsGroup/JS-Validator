@@ -37,9 +37,7 @@ var Validator = {
 			errorMessage : 'Too many characters.'
 		},
 		sameAs : {
-			// need property name, what it's comparing to, and the value to compare
 			validate : function(value, limit, propName, sameAs) {
-				if ( !Validator.data[sameAs] ) throw new Error('What property are you comparing too?');
 				return value === Validator.data[sameAs];
 			},
 		errorMessage : 'Values must be the same'
@@ -106,6 +104,7 @@ var Validator = {
 		
 			if (data.hasOwnProperty(prop)) {
 				// Like, "number" or "required" (Could be array of checks)
+				if ( !this.config[prop] ) continue;
 				validationRule = this.config[prop];
 	
 				// Did the user pass an array of checks?
@@ -120,6 +119,7 @@ var Validator = {
 						validationRule[len] = reviseIfLimit(validationRule[len]);
 						
 						// Determine if the rule is "sameAs_<otherPropName>". 
+						// Dear me - this is sloppy and repeated code. Fix, fool.
 						isSameRuleSet = testSame(validationRule[len]);
 						if ( isSameRuleSet )  {
 							validationRule[len] = isSameRuleSet.validationRule;

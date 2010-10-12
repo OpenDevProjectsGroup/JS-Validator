@@ -13,33 +13,35 @@
 
 		<script src="Validator.js"></script>
 		<script>
-			// Represents data retrieved from something like a contact form
-			var formData = {
-				firstName : 'Jeffrey',
-				lastName : 'Way',
-				occupation : 'web developer',
-				age : 'twenty five',
-				emailAddress : '',
-				password : 'mypassword',
-				passwordVerify : 'notthesamepassword'
-			}
+			(function() {
+				// Represents data retrieved from something like a contact form
+				var formData = {
+					firstName : 'Jeffrey',
+					lastName : 'Way',
+					occupation : 'web developer',
+					age : 'twenty five',
+					emailAddress : 'jeffrey@jeffrey-way.com',
+					password : 'mypasswordbutnot',
+					passwordVerify : 'mypassword'
+				}
 
-			// Here, we set up our rules for each field.
-			// If a field doesn't require validation, 
-			// just leave it out (like occupation).
-			Validator.config = {
-				firstName : ['min_2', 'required'],
-				age : 'number',
-				emailAddress : ['email', 'required'],
-				passwordVerify : 'sameAs_password'
-			};
+				// Here, we set up our rules for each field.
+				// If a field doesn't require validation, 
+				// just leave it out (like occupation).
+				Validator.config = {
+					firstName : ['min_2', 'required'],
+					age : 'number',
+					emailAddress : ['email', 'required'],
+					passwordVerify : 'sameAs_password'
+				};
 
-			Validator.validate(formData);
-			if ( Validator.hasErrors() ) {
-				Validator.populateList(document.getElementById('results'));
-			} else {
-				alert('No errors. Now update a database or something.');
-			}
+				Validator.validate(formData);
+				if ( Validator.hasErrors() ) {
+					Validator.populateList(document.getElementById('results'));
+				} else {
+					alert('No errors. Now update a database or something.');
+				}
+			})();
 		</script>
 	</body>
 </html>	
