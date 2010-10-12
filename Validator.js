@@ -1,8 +1,5 @@
 var Validator = {
 
-	// For min/max operations
-	limit : '',
-
 	validationRules: {
 		// A few to get started. 
 		required: {
@@ -25,20 +22,21 @@ var Validator = {
 			errorMessage: 'Must use a valid email address.'
 		},
 		min: {
-			validate : function(value, limit) {
-				return value.length >= limit;
+			validate : function(value, min) {
+				return value.length >= min;
 			},
 			errorMessage : 'Not enough characters'
+									
 		},
 		max: {
-			validate : function(value, limit) {
-				return value.length <= limit;
+			validate : function(value, min, max) {
+				return value.length <= max;
 			},
 			errorMessage : 'Too many characters.'
 		},
 		sameAs : {
 			validate : function(value, limit, propName, sameAs) {
-				return value === Validator.data[sameAs];
+				return value === Validator.sameAs;
 			},
 		errorMessage : 'Values must be the same'
 		}
@@ -50,15 +48,20 @@ var Validator = {
 	// To be set by the user. 
 	config: {},
 
+	min : '',
+
+	max : '',
+
+	sameAs : '',
+
 	// The object of data we're testing
 	data : {},
 
 	validate: function(data) {
-		var validationRule, 
+		var rule, 
 			 checker, 
 			 goodToGo, 
 			 toString = Object.prototype.toString,
-			 isArray, 
 			 prop, j, len,
 			 sameAs,
 			 isSameRuleSet;
@@ -71,30 +74,34 @@ var Validator = {
 
 		// Determines if a min|max rule has been applied,
 		// If so, it splits it.
-		function reviseIfLimit(validationRule) {
+		function reviseIfLimit(rule) {
 			var split;
 			// Check if rule is min|max_number
-			if ( /\d$/.test(validationRule) ) {
-				split = validationRule.split('_');
-				validationRule = split[0];
-				Validator.limit = split[1];
+			if ( /\d$/.test(rule) ) {
+				split = rule.split('_');
+				rule = split[0];
+				if ( rule === 'min'.toLowerCase() ) {
+					Validator.min = split[1];
+				} else {
+					Validator.max = split[1];
+				}
 			}
-			return validationRule;
+			return rule;
 		}
-		
-		// Determines if the rule is "sameAs"
-		// If so, splits it, and returns an object.
-		function testSame(validationRule) {
+
+		function isSameChecker(rule) {
 			var split;
 			// what if verification (sameAs_<field>)
-			if ( /^sameAs/i.test(validationRule) ) {
-				split = validationRule.split('_');
-				return {
-					sameAs : split[1],
-					validationRule : split[0]
-				};
+			if ( /^sameAs/i.test(rule) ) {
+				split = rule.split('_');
+				rule = split[0];
+				Validator.sameAs = split[1];
+
+				if ( !Validator.validationRules[rule] ) {
+					throw new Error(rule + ': Validation parameter is unknown.');
+				}
 			}
-			return false;
+			return rule;
 		}
 
 		// Filter through the form data object
@@ -105,70 +112,47 @@ var Validator = {
 			if (data.hasOwnProperty(prop)) {
 				// Like, "number" or "required" (Could be array of checks)
 				if ( !this.config[prop] ) continue;
-				validationRule = this.config[prop];
-	
+				rule = this.config[prop];
+
 				// Did the user pass an array of checks?
-				isArray = (toString.call(validationRule) === '[object Array]');
-				if (isArray) {
-					// Then filter through array, and check to see if we have a rule for the check.
-					len = validationRule.length;
+				if (toString.call(rule) === '[object Array]') {
+					len = rule.length;
 					checker = [];
 
-						while (len--) {
+					// Then filter through array, and check to see if we have a rule for the check.
+					while (len--) {
 						// Check if the rule is "min" or "max" followed by a limit (int). 
-						validationRule[len] = reviseIfLimit(validationRule[len]);
-						
-						// Determine if the rule is "sameAs_<otherPropName>". 
-						// Dear me - this is sloppy and repeated code. Fix, fool.
-						isSameRuleSet = testSame(validationRule[len]);
-						if ( isSameRuleSet )  {
-							validationRule[len] = isSameRuleSet.validationRule;
-							sameAs = isSameRuleSet.sameAs;
-						}
-
-						if (!this.validationRules[validationRule[len]]) {
-							throw new Error(validationRule[len] + ': Validation parameter is unknown.');
-						}
-						checker.push(this.validationRules[validationRule[len]]);
+						rule[len] = reviseIfLimit(rule[len]);
+						rule[len] = isSameChecker(rule[len]);
+						checker.push(this.validationRules[rule[len]]);
 					}
 				} else {
 					// no array. just a single value to validate.
 					// Check if the rule has a limit (min | max_INT)
-					validationRule = reviseIfLimit(validationRule);
-					
-					// Determine if the rule is "sameAs_<otherPropName>". 
-					isSameRuleSet = testSame(validationRule);
-					if ( isSameRuleSet )  {
-						validationRule = isSameRuleSet.validationRule;
-						sameAs = isSameRuleSet.sameAs;
-					}
+					rule = reviseIfLimit(rule);
+					rule = isSameChecker(rule);	
+					checker = this.validationRules[rule];
 
-					if (!validationRule) {
-						continue;
-					}
-
-					// checker equals the rule definition
-					checker = this.validationRules[validationRule];
 					if (!checker) {
-						throw new Error(validationRule + ': Validation parameter is unknown.');
+						throw new Error(rule + ': Validation parameter is unknown.');
 					}
 				}
 
 				// Now call the validate methods of all the items in the array
 				if (toString.call(checker) === '[object Array]') {
 					for (j = 0; j < checker.length; j++) {
-						goodToGo = callValidator(this, checker[j], goodToGo, sameAs);	
+						goodToGo = callValidator.call(this, checker[j]);	
 					}
 				} else {
-					goodToGo = callValidator(this, checker, goodToGo, sameAs);
+					goodToGo = callValidator.call(this, checker);
 				}
 			}
 		} // end for
 
-		function callValidator(that, checker, goodToGo, sameAs) {
-			goodToGo = checker.validate(data[prop], that.limit, prop, sameAs); // value, property name, what it's being compared to
+		function callValidator(checker) {
+			goodToGo = checker.validate(data[prop], this.min, this.max, prop, Validator.sameAs); // value, property name, what it's being compared to
 			if (!goodToGo) {
-				that.errorMessages.push(prop + ': ' + checker.errorMessage + (that.limit ? ' (' + that.limit + ')' : ''));
+				this.errorMessages.push(prop + ': ' + checker.errorMessage);
 			}
 		}
 
@@ -182,7 +166,7 @@ var Validator = {
 	// Another little helper method to populate a ul element with the list of errors (if any).
 	populateList: function(results) {
 		var len = Validator.errorMessages.length,
-			 li,
+			 li;
 			 frag = document.createDocumentFragment();
 
 		if (!results) {

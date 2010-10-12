@@ -21,7 +21,7 @@
 					occupation : 'web developer',
 					age : 'twenty five',
 					emailAddress : 'jeffrey@jeffrey-way.com',
-					password : 'mypasswordbutnot',
+					password : 'mypasswordwrong',
 					passwordVerify : 'mypassword'
 				}
 
@@ -29,8 +29,8 @@
 				// If a field doesn't require validation, 
 				// just leave it out (like occupation).
 				Validator.config = {
-					firstName : ['min_2', 'required'],
-					age : 'number',
+					firstName : ['max_20', 'min_5'],
+					age : ['required', 'number'],
 					emailAddress : ['email', 'required'],
 					passwordVerify : 'sameAs_password'
 				};
